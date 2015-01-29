@@ -19,7 +19,7 @@ from os import listdir, makedirs
 from os.path import isfile, join, exists
 
 
-sys.path.insert(0, '../../Util')
+sys.path.insert(0, '../Util')
 from mytool import delete_same
 
 reload(sys)
@@ -40,23 +40,41 @@ def transfer_xml_data(data_path):
 
 
 def extract_all_data():
-    data=[]
+    data = []
     tree = ET.parse('tmp.xml')
     root = tree.getroot()
 
-    sentences = root.iter(tag='sentence')
-    for sentence in sentences:
-        data.append(sentence.text)
+    #root: corpus, child: article
+    for child in root:
+        title = child.find('title').text
+        topic = child.find('topic').text
+        sentences = child.iter(tag='sentence')
 
-    topics = root.iter(tag='topic')
-    for topic in topics:
-        if topic.text not in all_topic_list:
-            all_topic_list.append(topic.text)
+        pos_sentences = []
+        for s in sentences:
+            pos_sentences.append(parse_data(s.text))
+        data.append({'title': title, 'topic': topic, 'sentence': pos_sentences})
 
     return data
 
 
-def parse_data(data):
+def parse_data(sentence):
+    
+    postag = sentence.split('　'.decode('utf8'))
+    pos_sentence = []
+    
+    for word in postag:
+        word_split = word.split('(')
+        if len(word_split) != 2:
+            continue
+        content = word_split[0]
+        tag = word_split[1][0:-1]
+        pos_sentence.append((content,tag))
+    
+    return pos_sentence
+    
+
+def back_parse_data(data):
     #print 'number of sentences: ' + str(len(data))
     output_data = []
     for d in data:
@@ -83,13 +101,14 @@ def write_data(output_file_name, output_data):
     fp_out=io.open(output_file_name, 'wb')
     for data in output_data:
         json.dump(data, fp_out, ensure_ascii=False)
+        fp_out.write('\n')
 
 
 def main():
     
-    data_path = '../../Data/sa_corpus'
-    #files = [ f for f in listdir(data_path) if isfile(join(data_path,f)) ]
-    files = [ f for f in ['xmlcorpus_115.xml'] if isfile(join(data_path,f)) ]
+    data_path = '../Data/sa_corpus'
+    files = [ f for f in listdir(data_path) if isfile(join(data_path,f)) ]
+    #files = [ f for f in ['xmlcorpus_115.xml', 'xmlcorpus_300.xml'] if isfile(join(data_path,f)) ]
 
     # read all data from corpus
     final_data = []
@@ -97,12 +116,11 @@ def main():
         print f
         transfer_xml_data(join(data_path,f))
         data = extract_all_data()
-        output_data = parse_data(data)
-        final_data = final_data + output_data
+        final_data = final_data + data
 
    
     #create folder for output data
-    output_path = '../../Data/sa_json'
+    output_path = '../Data/sa_json'
     if not exists(output_path):
         makedirs(output_path)
 
@@ -118,10 +136,10 @@ def main():
             end_index = data_num - 1
         else:
             end_index = start_index + data_num_per_file
-        write_data('output' + str(i) + '.json',final_data[start_index:end_index], i)
+        write_data('output' + str(i) + '.jsons',final_data[start_index:end_index], i)
     '''
 
-    write_data(output_path + 'output.jsons', final_data)
+    write_data(join(output_path,'output.jsons'), final_data)
 
 if __name__ == '__main__':
     main()
