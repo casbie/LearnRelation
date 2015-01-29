@@ -1,6 +1,7 @@
 # LearnRelation
 
 ## Data Processing
+* parse_xml.py: parse the corpus data(xml format) to json format and extract the articles(title, topic, sentences)
 
 ## Single Relation Extraction
 
