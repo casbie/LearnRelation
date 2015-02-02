@@ -77,7 +77,9 @@ def parse_data(sentence):
 def back_parse_data(data):
     #print 'number of sentences: ' + str(len(data))
     output_data = []
+    index = 0
     for d in data:
+        index += 1
         #print d
         postag = d.split('　'.decode('utf8'))
         sentence = ''
@@ -92,7 +94,7 @@ def back_parse_data(data):
             #print content, tag
             pos_list.append((content,tag))
         #print sentence
-        output_data.append({'text':sentence, 'postag':pos_list})
+        output_data.append({'index': index, 'text':sentence, 'postag':pos_list})
     return output_data
 
 
