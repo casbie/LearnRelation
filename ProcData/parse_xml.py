@@ -39,13 +39,15 @@ def transfer_xml_data(data_path):
         f.write(content)
 
 
-def extract_all_data():
+def extract_all_data(start_index):
     data = []
     tree = ET.parse('tmp.xml')
     root = tree.getroot()
-
+    
+    index = start_index
     #root: corpus, child: article
     for child in root:
+        index += 1
         title = child.find('title').text
         topic = child.find('topic').text
         sentences = child.iter(tag='sentence')
@@ -53,9 +55,9 @@ def extract_all_data():
         pos_sentences = []
         for s in sentences:
             pos_sentences.append(parse_data(s.text))
-        data.append({'title': title, 'topic': topic, 'sentence': pos_sentences})
+        data.append({'index': index, 'title': title, 'topic': topic, 'sentence': pos_sentences})
 
-    return data
+    return data, index
 
 
 def parse_data(sentence):
@@ -74,30 +76,6 @@ def parse_data(sentence):
     return pos_sentence
     
 
-def back_parse_data(data):
-    #print 'number of sentences: ' + str(len(data))
-    output_data = []
-    index = 0
-    for d in data:
-        index += 1
-        #print d
-        postag = d.split('　'.decode('utf8'))
-        sentence = ''
-        pos_list = []
-        for word in postag:
-            word_split = word.split('(')
-            if len(word_split) != 2:
-                continue
-            content = word_split[0]
-            tag = word_split[1][0:-1]
-            sentence = sentence + content
-            #print content, tag
-            pos_list.append((content,tag))
-        #print sentence
-        output_data.append({'index': index, 'text':sentence, 'postag':pos_list})
-    return output_data
-
-
 def write_data(output_file_name, output_data):
 
     fp_out=io.open(output_file_name, 'wb')
@@ -114,10 +92,11 @@ def main():
 
     # read all data from corpus
     final_data = []
+    tmp_index = 0
     for f in files:
         print f
         transfer_xml_data(join(data_path,f))
-        data = extract_all_data()
+        data, tmp_index = extract_all_data(tmp_index)
         final_data = final_data + data
 
    
