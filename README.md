@@ -12,6 +12,9 @@
 
 ## File Structure
 * ProcData: code used for data preprocessing
+  * parse_xml.py
+  * get_sentence.py
+  * dep_parser.py
 * Single: code for single relation extraction
 * Util: shared function for all code
 * Data:
