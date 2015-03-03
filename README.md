@@ -2,6 +2,8 @@
 
 ## Data Processing
 * parse_xml.py: parse the corpus data(xml format) to json format and extract the articles(title, topic, sentences)
+* get_sentence.py
+* dep_parser.py
 
 ## Single Relation Extraction
 
@@ -12,9 +14,6 @@
 
 ## File Structure
 * ProcData: code used for data preprocessing
-  * parse_xml.py
-  * get_sentence.py
-  * dep_parser.py
 * Single: code for single relation extraction
 * Util: shared function for all code
 * Data:
