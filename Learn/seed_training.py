@@ -145,7 +145,13 @@ def feature_to_number(feature_list):
 
 def read_seed(seed_file, data_path):
     print 'start reading seed...'
-    fp_seed = open(seed_file)
+    
+    fp_tmp = open('tmp_seed', 'w')
+    fp_tmp.write(open(seed_file).read().replace('\xe8\x87\xba', '\xe5\x8f\xb0'))
+    fp_tmp.close()
+
+    fp_seed = open('tmp_seed')
+    #fp_seed = open(seed_file)
     seed_data = []
     for line in fp_seed:
         index_info = line.strip().split(' ')
@@ -155,13 +161,13 @@ def read_seed(seed_file, data_path):
         loc = index_info[1].split('-')[1]
 
         if int(file_index) < 10:
-            file_name = '../Data/sa_feature_json_test/000' + file_index + '.json'
+            file_name = data_path + '/000' + file_index + '.json'
         elif int(file_index) < 100:
-            file_name = '../Data/sa_feature_json_test/00' + file_index + '.json'
+            file_name = data_path + '/00' + file_index + '.json'
         elif int(file_index) < 1000:
-            file_name = '../Data/sa_feature_json_test/0' + file_index + '.json'
+            file_name = data_path + '/0' + file_index + '.json'
         else:
-            file_name = '../Data/sa_feature_json_test/' + file_index + '.json'
+            file_name = data_path + '/' + file_index + '.json'
 
         if os.path.isfile(file_name):
 
@@ -225,10 +231,9 @@ def gene_testing_data(data_path):
                     fp_out.write(file_info+'-'+sentence_info+' '+(noun_list[i]+'-'+loc_list[j]+' '+text).encode('utf-8')+'\n')
 
 
-def write_SVM_data(data_list, output_file):
-    fp = open(output_file, 'w')
+def write_SVM_data(data_list, fp, label):
     for data in data_list:
-        fp.write('+1 ')
+        fp.write(label+' ')
         for dim in range(0, len(data)):
             fp.write(str(data[dim])+':1')
             if dim != len(data)-1:
@@ -271,14 +276,19 @@ def one_class():
 
 
 def main():
-    seed_file = '../Seed/seed_list_CN.txt'
-    data_path = '../Data/sa_feature_json_test'
+    data_path = '../Data/sa_feature_json'
+    fp_out = open('training.txt', 'w')
 
+    seed_file = '../Seed/seed_list_CN.txt'
     seed_feature = read_seed(seed_file, data_path)
-    write_SVM_data(seed_feature, 'training.txt')
+    write_SVM_data(seed_feature, fp_out, '+1')
+    
+    seed_file = '../Seed/seed_list_Wrong.txt'
+    seed_feature = read_seed(seed_file, data_path)
+    write_SVM_data(seed_feature, fp_out, '-1')
      
     # training
-    gene_testing_data(data_path)
+    #gene_testing_data(data_path)
 
     # read testing data and training
     data_file = '../Data/testing_data.txt'
