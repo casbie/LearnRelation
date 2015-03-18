@@ -155,13 +155,13 @@ def read_seed(seed_file, data_path):
         loc = index_info[1].split('-')[1]
 
         if int(file_index) < 10:
-            file_name = '../Data/sa_feature_json/000' + file_index + '.json'
+            file_name = '../Data/sa_feature_json_test/000' + file_index + '.json'
         elif int(file_index) < 100:
-            file_name = '../Data/sa_feature_json/00' + file_index + '.json'
+            file_name = '../Data/sa_feature_json_test/00' + file_index + '.json'
         elif int(file_index) < 1000:
-            file_name = '../Data/sa_feature_json/0' + file_index + '.json'
+            file_name = '../Data/sa_feature_json_test/0' + file_index + '.json'
         else:
-            file_name = '../Data/sa_feature_json/' + file_index + '.json'
+            file_name = '../Data/sa_feature_json_test/' + file_index + '.json'
 
         if os.path.isfile(file_name):
             fp_data = open(file_name)
@@ -231,7 +231,7 @@ def write_SVM_data(data_list, output_file):
 
 def main():
     seed_file = '../Seed/seed_list_CN.txt'
-    data_path = '../Data/sa_feature_json'
+    data_path = '../Data/sa_feature_json_test'
 
     seed_feature = read_seed(seed_file, data_path)
     write_SVM_data(seed_feature, 'training.txt')
