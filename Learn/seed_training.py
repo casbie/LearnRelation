@@ -155,16 +155,23 @@ def read_seed(seed_file, data_path):
         loc = index_info[1].split('-')[1]
 
         if int(file_index) < 10:
-            file_name = '../Data/sa_feature_json/000' + file_index + '.json'
+            file_name = '../Data/sa_feature_json_more/000' + file_index + '.json'
         elif int(file_index) < 100:
-            file_name = '../Data/sa_feature_json/00' + file_index + '.json'
+            file_name = '../Data/sa_feature_json_more/00' + file_index + '.json'
         elif int(file_index) < 1000:
-            file_name = '../Data/sa_feature_json/0' + file_index + '.json'
+            file_name = '../Data/sa_feature_json_more/0' + file_index + '.json'
         else:
-            file_name = '../Data/sa_feature_json/' + file_index + '.json'
+            file_name = '../Data/sa_feature_json_more/' + file_index + '.json'
 
         if os.path.isfile(file_name):
-            fp_data = open(file_name)
+
+            #transfer "臺" to "台"
+            fp_tmp = open('tmp', 'w')
+            fp_tmp.write(open(file_name).read().replace('\xe8\x87\xba', '\xe5\x8f\xb0'))
+            fp_tmp.close()
+
+            fp_data = open('tmp')
+            #fp_data = open(file_name)
             data = json.load(fp_data)
         
             data_sentence = data['sentence'][sentence_index]
@@ -229,9 +236,43 @@ def write_SVM_data(data_list, output_file):
             else:
                 fp.write('\n')
 
+
+def check_label(label, input_data, output_data):
+    fp_in = open(input_data)
+    fp_out = open(output_data, 'w')
+    data = []
+    for line in fp_in:
+        text = ''
+        words = line.strip().split(' ')
+        text += (words[0]+' ')
+        text += (words[1].split('-')[0]+' ')
+        text += (words[1].split('-')[1]+' ')
+        for i in range(2, len(words)):
+            text += words[i]
+        data.append(text)
+
+    for i in range(0, len(label)):
+        if int(label[i]) == 1:
+            fp_out.write(str(int(label[i]))+' '+data[i]+'\n')
+
+
+def one_class_cross():
+    y1, x1 = svm_read_problem('training.txt')
+    m = svm_train(y1, x1, '-c 4 -s 2 -v 5')
+
+
+def one_class():
+    y1, x1 = svm_read_problem('training.txt')
+    m = svm_train(y1, x1, '-c 4 -s 2 -v 5')
+    y2, x2 = svm_read_problem('testing.txt')
+    p_label, p_acc, p_val = svm_predict(y2, x2, m)
+    
+    check_label(p_label, '../Data/testing_data.txt', '../Result/result0320_true.txt')
+
+
 def main():
     seed_file = '../Seed/seed_list_CN.txt'
-    data_path = '../Data/sa_feature_json'
+    data_path = '../Data/sa_feature_json_more'
 
     seed_feature = read_seed(seed_file, data_path)
     write_SVM_data(seed_feature, 'training.txt')
@@ -241,11 +282,11 @@ def main():
 
     # read testing data and training
     data_file = '../Data/testing_data.txt'
-    data_feature = read_seed(data_file, data_path)
+    #data_feature = read_seed(data_file, data_path)
     #for i in range(0, len(data_feature)):
     #    print data_feature[i]
 
-    write_SVM_data(data_feature, 'testing.txt')
+    #write_SVM_data(data_feature, 'testing.txt')
 
 if __name__ == '__main__':
     main()
