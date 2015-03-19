@@ -39,7 +39,7 @@ def main():
 
 def main2():
     y1, x1 = svm_read_problem('training.txt')
-    m = svm_train(y1, x1, '-c 4 -s 2 -v 5')
+    m = svm_train(y1, x1, '-c 4 -h 0 -v 5')
     #y2, x2 = svm_read_problem('testing.txt')
     #p_label, p_acc, p_val = svm_predict(y2, x2, m)
     

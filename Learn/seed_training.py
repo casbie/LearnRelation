@@ -276,7 +276,7 @@ def one_class():
 
 
 def main():
-    data_path = '../Data/sa_feature_json'
+    data_path = '../Data/sa_feature_json_test'
     fp_out = open('training.txt', 'w')
 
     seed_file = '../Seed/seed_list_CN.txt'
