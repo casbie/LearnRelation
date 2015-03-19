@@ -286,7 +286,7 @@ def main():
     seed_feature = read_seed(seed_file, data_path)
     write_SVM_data(seed_feature, fp_out, '+1')
     
-    seed_file = '../Seed/seed_list_Wrong.txt'
+    seed_file = '../Seed/seed_list_Wrong_balance.txt'
     seed_feature = read_seed(seed_file, data_path)
     write_SVM_data(seed_feature, fp_out, '-1')
     
