@@ -195,10 +195,6 @@ def read_seed(seed_file, data_path):
     return seed_data
 
 
-def read_data():
-    return 0
-
-
 def gene_testing_data(data_path):
     from os import listdir
     from os.path import isfile, join
@@ -223,12 +219,14 @@ def gene_testing_data(data_path):
                 text += (words[i][0]+' ')
                 if words[i][1][0:2] == 'Nc':
                     loc_list.append(words[i][0])
-                elif words[i][1][0:2] in ['Na', 'Nb']:
+                elif words[i][1][0:2] in ['Na', 'Nb', 'Nc']:
                     noun_list.append(words[i][0])
             
             for i in range(0, len(noun_list)):
                 for j in range(i+1, len(loc_list)):
-                    fp_out.write(file_info+'-'+sentence_info+' '+(noun_list[i]+'-'+loc_list[j]+' '+text).encode('utf-8')+'\n')
+                    if noun_list[i] != loc_list[i]:
+                        fp_out.write(file_info+'-'+sentence_info+' '
+                                +(noun_list[i]+'-'+loc_list[j]+' '+text).encode('utf-8')+'\n')
 
 
 def write_SVM_data(data_list, fp, label):
@@ -276,27 +274,37 @@ def one_class():
 
 
 def main():
+    
+    # data_path means the path of corpus
     data_path = '../Data/sa_feature_json_test'
+    
+    # output file with SVM format
     fp_out = open('training.txt', 'w')
 
+    # generate the SVM format file, including positive and negative
     seed_file = '../Seed/seed_list_CN.txt'
     seed_feature = read_seed(seed_file, data_path)
     write_SVM_data(seed_feature, fp_out, '+1')
     
-    seed_file = '../Seed/seed_list_Wrong.txt'
+    seed_file = '../Seed/seed_list_Wrong_balance.txt'
     seed_feature = read_seed(seed_file, data_path)
     write_SVM_data(seed_feature, fp_out, '-1')
-     
-    # training
-    #gene_testing_data(data_path)
+    
+    #---------- split of training and testing ----------
 
-    # read testing data and training
+    # generate testing data from corpus
+    gene_testing_data(data_path)
+
+    # output file with SVM format
+    fp_out = open('testing.txt', 'w')
+    
+    # read corpus, select data for testing, extract features
     data_file = '../Data/testing_data.txt'
-    #data_feature = read_seed(data_file, data_path)
-    #for i in range(0, len(data_feature)):
-    #    print data_feature[i]
-
-    #write_SVM_data(data_feature, 'testing.txt')
+    data_feature = read_seed(data_file, data_path)
+    for i in range(0, len(data_feature)):
+        print data_feature[i]
+    write_SVM_data(data_feature, fp_out, '-1')
+    
 
 if __name__ == '__main__':
     main()

@@ -136,7 +136,7 @@ def main():
     number = 0
     for line in f_json:
         number += 1
-        if number <= 385:
+        if number <= 4060:
             continue
 
         data = json.loads(line)
