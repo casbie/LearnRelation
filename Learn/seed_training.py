@@ -274,9 +274,9 @@ def one_class():
 
 
 def main():
-
+    
     # data_path means the path of corpus
-    data_path = '../Data/sa_feature_json'
+    data_path = '../Data/sa_feature_json_test'
     
     # output file with SVM format
     fp_out = open('training.txt', 'w')

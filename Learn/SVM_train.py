@@ -35,8 +35,8 @@ def train_predict(output_file):
     
 
 def main():
-    #train_predict('../Result/result0319_0.txt')
-    cross_validation()
+    train_predict('../Result/result0319_0.txt')
+    #cross_validation()
 
 if __name__ == '__main__':
     main()
