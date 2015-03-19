@@ -19,33 +19,24 @@ def check_label(label, input_data, output_data):
     for i in range(0, len(label)):
         if int(label[i]) == 1:
             fp_out.write(str(int(label[i]))+' '+data[i]+'\n')
+        
 
+def cross_validation():
+    y, x = svm_read_problem('training.txt')
+    m = svm_train(y, x, '-c 4 -v 5 -t 0')
+
+
+def train_predict(output_file):
+    y1, x1 = svm_read_problem('training.txt')
+    m = svm_train(y1, x1, '-c 4 -t 0')
+    y2, x2 = svm_read_problem('testing.txt')
+    p_label, p_acc, p_val = svm_predict(y2, x2, m)
+    check_label(p_label, '../Data/testing_data.txt', output_file)
+    
 
 def main():
-    y, x = svm_read_problem('training.txt')
-    data_num = len(y)
-    fold_num = 5
-    for i in range(0, 5):
-        if i != fold_num-1:
-            index_start = i * (data_num/fold_num)
-            index_end = (i+1) * (data_num/fold_num)
-        else:
-            index_start = i * (data_num / fold_num)
-            index_end = data_num 
-        print index_start, index_end
-        
-        m = svm_train(y[index_start:index_end], x[index_start:index_end], '-c 4 -s 2')
-        
-
-def main2():
-    y1, x1 = svm_read_problem('training.txt')
-    m = svm_train(y1, x1, '-c 4 -s 2 -v 5')
-    #y2, x2 = svm_read_problem('testing.txt')
-    #p_label, p_acc, p_val = svm_predict(y2, x2, m)
-    
-    #check_label(p_label, '../Data/testing_data.txt', '../Result/result0316_true.txt')
-    #print p_label, p_acc, p_val
-    #print p_label
+    #train_predict('../Result/result0319_0.txt')
+    cross_validation()
 
 if __name__ == '__main__':
-    main2()
+    main()
